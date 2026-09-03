@@ -1,5 +1,6 @@
 package br.com.aweb.to_do_list.controller;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +85,21 @@ public class TodoController {
     public String delete(Todo todo) {
         todoRepository.delete(todo);
         return "redirect:/todo";
+    }
+
+    @PostMapping("/finish/{id}")
+    public String finish(@PathVariable Long id) {
+
+        var todo = todoRepository.findById(id);
+
+        if (todo.isPresent()) {
+            todo.get().setFinishedAt(LocalDate.now());
+            todoRepository.save(todo.get());
+
+            return "redirect:/todo";
+        }
+
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
 }
